@@ -3,6 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'providers/student_provider.dart';
 import 'providers/parent_provider.dart';
+import 'providers/teacher_provider.dart';
+import 'providers/pdr_provider.dart';
+import 'providers/admin_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/courses_screen.dart';
@@ -10,6 +13,9 @@ import 'screens/tasks_screen.dart';
 import 'screens/lessons_screen.dart';
 import 'screens/lesson_detail_screen.dart';
 import 'screens/parent/parent_dashboard_screen.dart';
+import 'screens/teacher/teacher_dashboard_screen.dart';
+import 'screens/pdr/pdr_dashboard_screen.dart';
+import 'screens/admin/admin_dashboard_screen.dart';
 import 'models/course.dart';
 import 'models/lesson.dart';
 
@@ -31,6 +37,9 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => StudentProvider()),
         ChangeNotifierProvider(create: (_) => ParentProvider()),
+        ChangeNotifierProvider(create: (_) => TeacherProvider()),
+        ChangeNotifierProvider(create: (_) => PdrProvider()),
+        ChangeNotifierProvider(create: (_) => AdminProvider()),
       ],
       child: MaterialApp(
         title: 'NGP Mobil',
@@ -79,6 +88,18 @@ class MyApp extends StatelessWidget {
             case '/parent/dashboard':
               return MaterialPageRoute(
                 builder: (_) => const ParentDashboardScreen(),
+              );
+            case '/teacher/dashboard':
+              return MaterialPageRoute(
+                builder: (_) => const TeacherDashboardScreen(),
+              );
+            case '/pdr/dashboard':
+              return MaterialPageRoute(
+                builder: (_) => const PdrDashboardScreen(),
+              );
+            case '/admin/dashboard':
+              return MaterialPageRoute(
+                builder: (_) => const AdminDashboardScreen(),
               );
             case '/courses':
               return MaterialPageRoute(

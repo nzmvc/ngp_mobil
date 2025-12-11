@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/student_provider.dart';
 import '../providers/parent_provider.dart';
+import '../providers/teacher_provider.dart';
+import '../providers/pdr_provider.dart';
+import '../providers/admin_provider.dart';
 import '../services/api_service.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -64,8 +67,32 @@ class _LoginScreenState extends State<LoginScreen> {
             if (mounted) {
               Navigator.of(context).pushReplacementNamed('/parent/dashboard');
             }
+          } else if (userType == 'teacher') {
+            // Fetch teacher data
+            final teacherProvider = context.read<TeacherProvider>();
+            await teacherProvider.loadDashboard();
+            
+            if (mounted) {
+              Navigator.of(context).pushReplacementNamed('/teacher/dashboard');
+            }
+          } else if (userType == 'pdr') {
+            // Fetch PDR data
+            final pdrProvider = context.read<PdrProvider>();
+            await pdrProvider.loadDashboard();
+            
+            if (mounted) {
+              Navigator.of(context).pushReplacementNamed('/pdr/dashboard');
+            }
+          } else if (userType == 'admin') {
+            // Fetch Admin data
+            final adminProvider = context.read<AdminProvider>();
+            await adminProvider.loadDashboard();
+            
+            if (mounted) {
+              Navigator.of(context).pushReplacementNamed('/admin/dashboard');
+            }
           } else {
-            // For other user types (teacher, pdr, admin), show coming soon
+            // For unknown user types, show error
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('$userType girişi henüz desteklenmiyor'),
