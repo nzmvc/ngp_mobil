@@ -133,4 +133,9 @@ class Assignment {
         return 'Orta';
     }
   }
+  
+  String get formattedDueDate {
+    if (dueDate == null) return 'Belirsiz';
+    return '${dueDate!.day.toString().padLeft(2, '0')}.${dueDate!.month.toString().padLeft(2, '0')}.${dueDate!.year}';
+  }
 }

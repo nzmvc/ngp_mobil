@@ -8,7 +8,7 @@ import '../models/attendance.dart';
 import '../models/assignment.dart';
 
 class TeacherApiService {
-  static const String baseUrl = 'http://192.168.1.4:8000/api';
+  static const String baseUrl = 'http://127.0.0.1:8000/api';
   
   final storage = const FlutterSecureStorage();
 
@@ -19,6 +19,17 @@ class TeacherApiService {
       'Content-Type': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
     };
+  }
+
+  // Logout
+  Future<void> logout() async {
+    await storage.delete(key: 'access_token');
+    await storage.delete(key: 'refresh_token');
+    await storage.delete(key: 'user_type');
+    await storage.delete(key: 'user_id');
+    await storage.delete(key: 'username');
+    await storage.delete(key: 'full_name');
+    await storage.delete(key: 'profile');
   }
 
   // Get teacher dashboard

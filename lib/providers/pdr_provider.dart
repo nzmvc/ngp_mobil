@@ -59,6 +59,19 @@ class PdrProvider with ChangeNotifier {
   String? _error;
   String? get error => _error;
 
+  // Logout
+  Future<void> logout() async {
+    await _apiService.logout();
+    _dashboard = null;
+    _students = [];
+    _selectedStudent = null;
+    _studentDetail = null;
+    _questions = [];
+    _answers = [];
+    _analyses = [];
+    notifyListeners();
+  }
+
   // Load dashboard
   Future<void> loadDashboard() async {
     _isLoadingDashboard = true;

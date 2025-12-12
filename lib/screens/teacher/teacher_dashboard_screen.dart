@@ -40,6 +40,30 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
               Provider.of<TeacherProvider>(context, listen: false).loadDashboard();
             },
           ),
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.account_circle, color: Color(0xFF2C3E50)),
+            onSelected: (value) async {
+              if (value == 'logout') {
+                final navigator = Navigator.of(context);
+                await context.read<TeacherProvider>().logout();
+                if (mounted) {
+                  navigator.pushNamedAndRemoveUntil('/login', (route) => false);
+                }
+              }
+            },
+            itemBuilder: (BuildContext context) => [
+              const PopupMenuItem<String>(
+                value: 'logout',
+                child: Row(
+                  children: [
+                    Icon(Icons.logout, size: 20),
+                    SizedBox(width: 8),
+                    Text('Çıkış Yap'),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ],
       ),
       body: Consumer<TeacherProvider>(

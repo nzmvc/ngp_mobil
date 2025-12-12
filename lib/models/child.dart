@@ -4,7 +4,7 @@ class Child {
   final String username;
   final String? email;
   final String? profilePicUrl;
-  final String? gender;
+  final int? gender;  // Changed from String to int (API returns 0/1)
   final String? school;
   final String? birthday;
   final int? age;
@@ -25,15 +25,15 @@ class Child {
 
   factory Child.fromJson(Map<String, dynamic> json) {
     return Child(
-      id: json['id'],
+      id: json['id'] ?? 0,
       fullName: json['full_name'] ?? '',
       username: json['username'] ?? '',
       email: json['email'],
       profilePicUrl: json['profile_pic_url'],
-      gender: json['gender'],
+      gender: json['gender'] as int?,  // Cast to int
       school: json['school'],
       birthday: json['birthday'],
-      age: json['age'],
+      age: json['age'] as int?,
       stats: json['stats'] != null ? ChildStats.fromJson(json['stats']) : null,
     );
   }

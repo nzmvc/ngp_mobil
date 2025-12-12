@@ -9,7 +9,7 @@ import '../models/payment.dart';
 import '../models/teacher_comment.dart';
 
 class ParentApiService {
-  static const String baseUrl = 'http://192.168.1.4:8000/api';
+  static const String baseUrl = 'http://127.0.0.1:8000/api';
   
   final storage = const FlutterSecureStorage();
 
@@ -22,25 +22,54 @@ class ParentApiService {
     };
   }
 
+  // Logout
+  Future<void> logout() async {
+    await storage.delete(key: 'access_token');
+    await storage.delete(key: 'refresh_token');
+    await storage.delete(key: 'user_type');
+    await storage.delete(key: 'user_id');
+    await storage.delete(key: 'username');
+    await storage.delete(key: 'full_name');
+    await storage.delete(key: 'profile');
+  }
+
   // Get parent dashboard
   Future<ParentDashboard> fetchDashboard() async {
     try {
       final headers = await _getHeaders();
+      print('===== PARENT DASHBOARD DEBUG =====');
+      print('Request URL: $baseUrl/parent/dashboard/');
+      print('Headers: $headers');
+      
       final response = await http.get(
         Uri.parse('$baseUrl/parent/dashboard/'),
         headers: headers,
       );
 
+      print('Response Status: ${response.statusCode}');
+      print('Response Body Length: ${response.body.length} bytes');
+      
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        return ParentDashboard.fromJson(data);
+        print('Parsed JSON keys: ${data.keys.toList()}');
+        print('Children in JSON: ${data['children']}');
+        print('Children count: ${data['children']?.length ?? 0}');
+        
+        final dashboard = ParentDashboard.fromJson(data);
+        print('Dashboard children count: ${dashboard.children.length}');
+        if (dashboard.children.isNotEmpty) {
+          print('First child: ${dashboard.children.first.fullName}');
+        }
+        print('==================================');
+        
+        return dashboard;
       } else if (response.statusCode == 401) {
         throw Exception('Unauthorized - Please login again');
       } else {
-        throw Exception('Failed to load dashboard');
+        throw Exception('Server error: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Error fetching dashboard: ${e.toString()}');
+      throw Exception('Error loading dashboard');
     }
   }
 

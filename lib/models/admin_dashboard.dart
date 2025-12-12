@@ -19,14 +19,15 @@ class AdminDashboard {
 
   factory AdminDashboard.fromJson(Map<String, dynamic> json) {
     return AdminDashboard(
-      adminUser: AdminUser.fromJson(json['admin_user']),
-      statistics: AdminStatistics.fromJson(json['statistics']),
-      financialSummary: FinancialSummary.fromJson(json['financial_summary']),
-      recentActivities: (json['recent_activities'] as List)
-          .map((e) => SystemActivity.fromJson(e))
-          .toList(),
-      systemHealth: SystemHealth.fromJson(json['system_health']),
-      userDistribution: UserDistribution.fromJson(json['user_distribution']),
+      adminUser: AdminUser.fromJson(json['admin_user'] ?? {}),
+      statistics: AdminStatistics.fromJson(json['statistics'] ?? {}),
+      financialSummary: FinancialSummary.fromJson(json['financial_summary'] ?? {}),
+      recentActivities: (json['recent_activities'] as List?)
+              ?.map((e) => SystemActivity.fromJson(e))
+              .toList() ??
+          [],
+      systemHealth: SystemHealth.fromJson(json['system_health'] ?? {}),
+      userDistribution: UserDistribution.fromJson(json['user_distribution'] ?? {}),
     );
   }
 
@@ -63,13 +64,13 @@ class AdminStatistics {
 
   factory AdminStatistics.fromJson(Map<String, dynamic> json) {
     return AdminStatistics(
-      totalStudents: json['total_students'],
-      totalTeachers: json['total_teachers'],
-      totalParents: json['total_parents'],
-      totalPdr: json['total_pdr'],
-      totalCourses: json['total_courses'],
-      totalHomeworks: json['total_homeworks'],
-      totalTasks: json['total_tasks'],
+      totalStudents: json['total_students'] ?? 0,
+      totalTeachers: json['total_teachers'] ?? 0,
+      totalParents: json['total_parents'] ?? 0,
+      totalPdr: json['total_pdr'] ?? 0,
+      totalCourses: json['total_courses'] ?? 0,
+      totalHomeworks: json['total_homeworks'] ?? 0,
+      totalTasks: json['total_tasks'] ?? 0,
     );
   }
 
@@ -104,7 +105,7 @@ class FinancialSummary {
       totalIncome: (json['total_income'] ?? 0.0).toDouble(),
       totalExpense: (json['total_expense'] ?? 0.0).toDouble(),
       netProfit: (json['net_profit'] ?? 0.0).toDouble(),
-      period: json['period'],
+      period: json['period'] ?? '',
     );
   }
 
@@ -133,10 +134,10 @@ class SystemActivity {
 
   factory SystemActivity.fromJson(Map<String, dynamic> json) {
     return SystemActivity(
-      id: json['id'],
-      userName: json['user_name'],
-      operation: json['operation'],
-      date: json['date'],
+      id: json['id'] ?? 0,
+      userName: json['user_name'] ?? '',
+      operation: json['operation'] ?? '',
+      date: json['date'] ?? '',
     );
   }
 
@@ -165,9 +166,9 @@ class SystemHealth {
 
   factory SystemHealth.fromJson(Map<String, dynamic> json) {
     return SystemHealth(
-      activeStudents: json['active_students'],
-      activeTeachers: json['active_teachers'],
-      databaseStatus: json['database_status'],
+      activeStudents: json['active_students'] ?? 0,
+      activeTeachers: json['active_teachers'] ?? 0,
+      databaseStatus: json['database_status'] ?? 'unknown',
       lastBackup: json['last_backup'],
     );
   }
@@ -210,10 +211,10 @@ class UserDistribution {
 
   factory UserDistribution.fromJson(Map<String, dynamic> json) {
     return UserDistribution(
-      students: json['students'],
-      teachers: json['teachers'],
-      parents: json['parents'],
-      pdr: json['pdr'],
+      students: json['students'] ?? 0,
+      teachers: json['teachers'] ?? 0,
+      parents: json['parents'] ?? 0,
+      pdr: json['pdr'] ?? 0,
     );
   }
 

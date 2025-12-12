@@ -31,11 +31,29 @@ class _ParentDashboardScreenState extends State<ParentDashboardScreen> {
       appBar: AppBar(
         title: const Text('Veli Paneli'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {
-              // TODO: Navigate to notifications
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.account_circle),
+            onSelected: (value) async {
+              if (value == 'logout') {
+                final navigator = Navigator.of(context);
+                await context.read<ParentProvider>().logout();
+                if (mounted) {
+                  navigator.pushNamedAndRemoveUntil('/login', (route) => false);
+                }
+              }
             },
+            itemBuilder: (BuildContext context) => [
+              const PopupMenuItem<String>(
+                value: 'logout',
+                child: Row(
+                  children: [
+                    Icon(Icons.logout, size: 20),
+                    SizedBox(width: 8),
+                    Text('Çıkış Yap'),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -47,28 +65,32 @@ class _ParentDashboardScreenState extends State<ParentDashboardScreen> {
 
           if (provider.error != null && provider.dashboard == null) {
             return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Veriler yüklenemedi',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    provider.error!,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton.icon(
-                    onPressed: _refreshData,
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Tekrar Dene'),
-                  ),
-                ],
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Veriler yüklenemedi',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Sunucu hatası. Lütfen daha sonra tekrar deneyin.',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                      onPressed: _refreshData,
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Tekrar Dene'),
+                    ),
+                  ],
+                ),
               ),
             );
           }
@@ -92,6 +114,10 @@ class _ParentDashboardScreenState extends State<ParentDashboardScreen> {
 
                   // Statistics Cards
                   _buildStatisticsSection(dashboard.statistics),
+                  const SizedBox(height: 20),
+
+                  // Quick Access Buttons
+                  _buildQuickAccessButtons(),
                   const SizedBox(height: 20),
 
                   // Children Cards
@@ -228,6 +254,71 @@ class _ParentDashboardScreenState extends State<ParentDashboardScreen> {
     );
   }
 
+  Widget _buildQuickAccessButtons() {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildAccessButton(
+            title: 'Ödemeler',
+            icon: Icons.payment,
+            color: Colors.green,
+            onTap: () {
+              Navigator.pushNamed(context, '/parent/payments');
+            },
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _buildAccessButton(
+            title: 'Öğretmen Yorumları',
+            icon: Icons.comment,
+            color: Colors.purple,
+            onTap: () {
+              Navigator.pushNamed(context, '/parent/comments');
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAccessButton({
+    required String title,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return Card(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, size: 28, color: color),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                title,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildChildrenSection(List<Child> children) {
     return Column(
       children: children.map((child) {
@@ -235,7 +326,7 @@ class _ParentDashboardScreenState extends State<ParentDashboardScreen> {
           margin: const EdgeInsets.only(bottom: 12),
           child: ListTile(
             leading: CircleAvatar(
-              backgroundColor: child.gender == 'male' ? Colors.blue : Colors.pink,
+              backgroundColor: child.gender == 1 ? Colors.blue : Colors.pink,
               child: Text(
                 child.initials,
                 style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),

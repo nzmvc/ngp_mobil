@@ -5,7 +5,7 @@ class Lesson {
   final int order;
   final String? videoUrl;
   final String? fileUrl;
-  final int courseId;
+  final int? courseId;  // Optional because API doesn't return it
 
   Lesson({
     required this.id,
@@ -14,14 +14,14 @@ class Lesson {
     required this.order,
     this.videoUrl,
     this.fileUrl,
-    required this.courseId,
+    this.courseId,
   });
 
   factory Lesson.fromJson(Map<String, dynamic> json) {
     return Lesson(
       id: json['id'] ?? 0,
-      title: json['title'] ?? '',
-      description: json['description'],
+      title: json['subject'] ?? json['title'] ?? '',  // Backend uses 'subject', not 'title'
+      description: json['description_preview'] ?? json['description'],  // Backend uses 'description_preview'
       order: json['order'] ?? 0,
       videoUrl: json['video_url'],
       fileUrl: json['file_url'],

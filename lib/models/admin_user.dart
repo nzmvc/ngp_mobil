@@ -13,10 +13,10 @@ class AdminUser {
 
   factory AdminUser.fromJson(Map<String, dynamic> json) {
     return AdminUser(
-      id: json['id'],
-      fullName: json['full_name'],
-      username: json['username'],
-      email: json['email'],
+      id: json['id'] ?? 0,
+      fullName: json['full_name'] ?? '',
+      username: json['username'] ?? '',
+      email: json['email'] ?? '',
     );
   }
 

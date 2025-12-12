@@ -49,6 +49,18 @@ class AdminProvider with ChangeNotifier {
   bool _isLoadingStudents = false;
   bool get isLoadingStudents => _isLoadingStudents;
 
+  // Logout
+  Future<void> logout() async {
+    await _apiService.logout();
+    _dashboard = null;
+    _users = [];
+    _students = [];
+    _teachers = [];
+    _parents = [];
+    _courses = [];
+    notifyListeners();
+  }
+
   bool _isLoadingTeachers = false;
   bool get isLoadingTeachers => _isLoadingTeachers;
 

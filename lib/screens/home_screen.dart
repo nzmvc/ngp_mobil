@@ -33,14 +33,34 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('NGP Mobil'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              final navigator = Navigator.of(context);
-              await context.read<StudentProvider>().logout();
-              if (mounted) {
-                navigator.pushReplacementNamed('/login');
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              Navigator.pushNamed(context, '/student-profile');
+            },
+          ),
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.account_circle),
+            onSelected: (value) async {
+              if (value == 'logout') {
+                final navigator = Navigator.of(context);
+                await context.read<StudentProvider>().logout();
+                if (mounted) {
+                  navigator.pushNamedAndRemoveUntil('/login', (route) => false);
+                }
               }
             },
+            itemBuilder: (BuildContext context) => [
+              const PopupMenuItem<String>(
+                value: 'logout',
+                child: Row(
+                  children: [
+                    Icon(Icons.logout, size: 20),
+                    SizedBox(width: 8),
+                    Text('Çıkış Yap'),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),

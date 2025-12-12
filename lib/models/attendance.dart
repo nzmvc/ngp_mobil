@@ -51,4 +51,11 @@ class Attendance {
 
   bool get isPresent => rollcall;
   bool get isAbsent => !rollcall;
+  
+  // UI için ek getter'lar
+  String get status => rollcall ? 'present' : 'absent';
+  String get lessonTitle => lessonSubject;
+  String get formattedDate => date;
+  String? get comment => descToStudent;
+  String get statusDisplay => rollcallDisplay;
 }

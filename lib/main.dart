@@ -12,7 +12,13 @@ import 'screens/courses_screen.dart';
 import 'screens/tasks_screen.dart';
 import 'screens/lessons_screen.dart';
 import 'screens/lesson_detail_screen.dart';
+import 'screens/assignment_detail_screen.dart';
+import 'screens/assignment_submit_screen.dart';
+import 'screens/student_profile_screen.dart';
 import 'screens/parent/parent_dashboard_screen.dart';
+import 'screens/parent/child_detail_screen.dart';
+import 'screens/parent/payment_list_screen.dart';
+import 'screens/parent/teacher_comments_screen.dart';
 import 'screens/teacher/teacher_dashboard_screen.dart';
 import 'screens/pdr/pdr_dashboard_screen.dart';
 import 'screens/admin/admin_dashboard_screen.dart';
@@ -89,6 +95,19 @@ class MyApp extends StatelessWidget {
               return MaterialPageRoute(
                 builder: (_) => const ParentDashboardScreen(),
               );
+            case '/parent/child-detail':
+              final childId = settings.arguments as int;
+              return MaterialPageRoute(
+                builder: (_) => ChildDetailScreen(childId: childId),
+              );
+            case '/parent/payments':
+              return MaterialPageRoute(
+                builder: (_) => const PaymentListScreen(),
+              );
+            case '/parent/comments':
+              return MaterialPageRoute(
+                builder: (_) => const TeacherCommentsScreen(),
+              );
             case '/teacher/dashboard':
               return MaterialPageRoute(
                 builder: (_) => const TeacherDashboardScreen(),
@@ -118,6 +137,20 @@ class MyApp extends StatelessWidget {
               final lesson = settings.arguments as Lesson;
               return MaterialPageRoute(
                 builder: (_) => LessonDetailScreen(lesson: lesson),
+              );
+            case '/assignment-detail':
+              final assignmentId = settings.arguments as int;
+              return MaterialPageRoute(
+                builder: (_) => AssignmentDetailScreen(assignmentId: assignmentId),
+              );
+            case '/assignment-submit':
+              final assignmentId = settings.arguments as int;
+              return MaterialPageRoute(
+                builder: (_) => AssignmentSubmitScreen(assignmentId: assignmentId),
+              );
+            case '/student-profile':
+              return MaterialPageRoute(
+                builder: (_) => const StudentProfileScreen(),
               );
             default:
               return MaterialPageRoute(

@@ -24,13 +24,25 @@ class Course {
   });
 
   factory Course.fromJson(Map<String, dynamic> json) {
+    // Handle lessonCategory which might be int or string
+    String? lessonCat;
+    if (json['lessonCategory'] != null) {
+      lessonCat = json['lessonCategory'].toString();
+    }
+    
+    // Handle category_display which might be int or string
+    String? catDisplay;
+    if (json['category_display'] != null) {
+      catDisplay = json['category_display'].toString();
+    }
+    
     return Course(
       id: json['id'] ?? 0,
       title: json['title'] ?? '',
       shortNot: json['shortNot'],
       description: json['description'],
-      lessonCategory: json['lessonCategory'],
-      categoryDisplay: json['category_display'],
+      lessonCategory: lessonCat,
+      categoryDisplay: catDisplay,
       lessonCount: json['lesson_count'] ?? 0,
       imageUrl: json['image_url'],
       price: json['price'] != null ? (json['price'] as num).toDouble() : null,

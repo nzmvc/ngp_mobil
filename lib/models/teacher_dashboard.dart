@@ -1,13 +1,14 @@
 import 'teacher.dart';
 import 'teacher_student.dart';
 import 'attendance.dart';
+import 'assignment.dart';
 
 class TeacherDashboard {
   final Teacher teacher;
   final TeacherStatistics statistics;
-  final List<Attendance> recentSessions;
-  final int pendingHomeworks;
-  final int todaySessions;
+  final List<dynamic> recentSessions;
+  final List<dynamic> pendingHomeworks;
+  final List<dynamic> todaySessions;
 
   TeacherDashboard({
     required this.teacher,
@@ -21,12 +22,9 @@ class TeacherDashboard {
     return TeacherDashboard(
       teacher: Teacher.fromJson(json['teacher']),
       statistics: TeacherStatistics.fromJson(json['statistics'] ?? {}),
-      recentSessions: (json['recent_sessions'] as List?)
-              ?.map((session) => Attendance.fromJson(session))
-              .toList() ??
-          [],
-      pendingHomeworks: json['pending_homeworks'] ?? 0,
-      todaySessions: json['today_sessions'] ?? 0,
+      recentSessions: (json['recent_sessions'] as List?)?.cast<dynamic>() ?? [],
+      pendingHomeworks: (json['pending_homeworks'] as List?)?.cast<dynamic>() ?? [],
+      todaySessions: (json['today_sessions'] as List?)?.cast<dynamic>() ?? [],
     );
   }
 
@@ -34,7 +32,7 @@ class TeacherDashboard {
     return {
       'teacher': teacher.toJson(),
       'statistics': statistics.toJson(),
-      'recent_sessions': recentSessions.map((s) => s.toJson()).toList(),
+      'recent_sessions': recentSessions,
       'pending_homeworks': pendingHomeworks,
       'today_sessions': todaySessions,
     };

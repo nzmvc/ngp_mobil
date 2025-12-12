@@ -36,6 +36,19 @@ class ParentProvider with ChangeNotifier {
   double get totalPayments => _dashboard?.statistics.totalPayments ?? 0.0;
   int get totalPendingAssignments => _dashboard?.statistics.totalPendingAssignments ?? 0;
 
+  // Logout
+  Future<void> logout() async {
+    await _apiService.logout();
+    _dashboard = null;
+    _children = [];
+    _selectedChild = null;
+    _childAssignments = [];
+    _childAttendance = [];
+    _payments = [];
+    _comments = [];
+    notifyListeners();
+  }
+
   // Fetch dashboard
   Future<void> fetchDashboard() async {
     _isLoading = true;

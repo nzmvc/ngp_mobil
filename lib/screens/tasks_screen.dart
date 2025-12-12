@@ -187,7 +187,11 @@ class _TasksScreenState extends State<TasksScreen> {
           child: AssignmentCard(
             assignment: assignment,
             onTap: () {
-              _showAssignmentDetails(context, assignment);
+              Navigator.pushNamed(
+                context,
+                '/assignment-detail',
+                arguments: assignment.id,
+              );
             },
           ),
         );

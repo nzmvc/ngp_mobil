@@ -49,6 +49,19 @@ class TeacherProvider with ChangeNotifier {
   bool _isLoadingCourses = false;
   bool get isLoadingCourses => _isLoadingCourses;
 
+  // Logout
+  Future<void> logout() async {
+    await _apiService.logout();
+    _dashboard = null;
+    _students = [];
+    _selectedStudent = null;
+    _courses = [];
+    _rollcalls = [];
+    _homeworks = [];
+    _pendingGrading = [];
+    notifyListeners();
+  }
+
   bool _isLoadingRollcalls = false;
   bool get isLoadingRollcalls => _isLoadingRollcalls;
 

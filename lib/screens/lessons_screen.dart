@@ -21,6 +21,7 @@ class _LessonsScreenState extends State<LessonsScreen> {
   @override
   void initState() {
     super.initState();
+    print('LessonsScreen initState - Course: ${widget.course.title} (ID: ${widget.course.id})');
     _fetchLessons();
   }
 
@@ -31,14 +32,31 @@ class _LessonsScreenState extends State<LessonsScreen> {
     });
 
     try {
+      print('DEBUG LessonsScreen: Fetching lessons for course ${widget.course.id}');
       final response = await _apiService.fetchLessons(widget.course.id);
+      print('DEBUG LessonsScreen: API Response: $response');
       final lessonsList = response['lessons'] as List<dynamic>;
-      final lessons = lessonsList.map((json) => Lesson.fromJson(json)).toList();
+      print('DEBUG LessonsScreen: Found ${lessonsList.length} lessons');
+      final lessons = lessonsList.map((json) {
+        final lesson = Lesson.fromJson(json);
+        // Set courseId from widget since API doesn't return it
+        return Lesson(
+          id: lesson.id,
+          title: lesson.title,
+          description: lesson.description,
+          order: lesson.order,
+          videoUrl: lesson.videoUrl,
+          fileUrl: lesson.fileUrl,
+          courseId: widget.course.id,
+        );
+      }).toList();
       setState(() {
         _lessons = lessons;
         _isLoading = false;
       });
+      print('DEBUG LessonsScreen: Successfully loaded ${lessons.length} lessons');
     } catch (e) {
+      print('DEBUG LessonsScreen: Error fetching lessons: $e');
       setState(() {
         _error = e.toString();
         _isLoading = false;
@@ -56,28 +74,57 @@ class _LessonsScreenState extends State<LessonsScreen> {
           ? const Center(child: CircularProgressIndicator())
           : _error != null
               ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.error_outline,
-                        size: 64,
-                        color: Colors.grey[400],
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Dersler yüklenemedi',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[600],
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          size: 64,
+                          color: Colors.grey[400],
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      ElevatedButton(
-                        onPressed: _fetchLessons,
-                        child: const Text('Tekrar Dene'),
-                      ),
-                    ],
+                        const SizedBox(height: 16),
+                        Text(
+                          'Dersler yüklenemedi',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.red[50],
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.red[200]!),
+                          ),
+                          child: Column(
+                            children: [
+                              const Text(
+                                'DEBUG: Hata Detayı',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                _error!,
+                                style: const TextStyle(fontSize: 12),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: _fetchLessons,
+                          child: const Text('Tekrar Dene'),
+                        ),
+                      ],
+                    ),
                   ),
                 )
               : _lessons.isEmpty
