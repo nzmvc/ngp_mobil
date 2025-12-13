@@ -122,7 +122,19 @@ class _ParentDashboardScreenState extends State<ParentDashboardScreen> {
 
                   // Children Cards
                   if (dashboard.children.isNotEmpty) ...[
-                    _buildSectionTitle('Çocuklarım'),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildSectionTitle('Çocuklarım'),
+                        if (dashboard.children.length > 1)
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/parent/children');
+                            },
+                            child: const Text('Tümünü Gör'),
+                          ),
+                      ],
+                    ),
                     const SizedBox(height: 12),
                     _buildChildrenSection(dashboard.children),
                     const SizedBox(height: 20),
@@ -136,19 +148,14 @@ class _ParentDashboardScreenState extends State<ParentDashboardScreen> {
                     const SizedBox(height: 20),
                   ],
 
-                  // Recent Comments
-                  if (dashboard.recentComments.isNotEmpty) ...[
-                    _buildSectionTitle('Öğretmen Yorumları'),
+                  // Recent Activity Timeline
+                  if (dashboard.recentRollcalls.isNotEmpty || dashboard.recentComments.isNotEmpty) ...[
+                    _buildSectionTitle('Son Aktiviteler'),
                     const SizedBox(height: 12),
-                    _buildRecentCommentsSection(dashboard.recentComments),
-                    const SizedBox(height: 20),
-                  ],
-
-                  // Recent Rollcalls
-                  if (dashboard.recentRollcalls.isNotEmpty) ...[
-                    _buildSectionTitle('Son Yoklamalar'),
-                    const SizedBox(height: 12),
-                    _buildRecentRollcallsSection(dashboard.recentRollcalls),
+                    _buildRecentActivityTimeline(
+                      dashboard.recentRollcalls,
+                      dashboard.recentComments,
+                    ),
                   ],
                 ],
               ),
@@ -195,24 +202,37 @@ class _ParentDashboardScreenState extends State<ParentDashboardScreen> {
   }
 
   Widget _buildStatisticsSection(DashboardStatistics stats) {
-    return Row(
+    return GridView.count(
+      crossAxisCount: 2,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      childAspectRatio: 1.2,
+      mainAxisSpacing: 12,
+      crossAxisSpacing: 12,
       children: [
-        Expanded(
-          child: _buildStatCard(
-            'Çocuklar',
-            stats.totalChildren.toString(),
-            Icons.child_care,
-            Colors.blue,
-          ),
+        _buildStatCard(
+          'Çocuklar',
+          stats.totalChildren.toString(),
+          Icons.child_care,
+          Colors.blue,
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildStatCard(
-            'Bekleyen Ödevler',
-            stats.totalPendingAssignments.toString(),
-            Icons.assignment_late,
-            Colors.orange,
-          ),
+        _buildStatCard(
+          'Toplam Ödeme',
+          '${stats.totalPayments.toStringAsFixed(0)} ₺',
+          Icons.payment,
+          Colors.green,
+        ),
+        _buildStatCard(
+          'Bekleyen Ödev',
+          stats.totalPendingAssignments.toString(),
+          Icons.assignment,
+          Colors.orange,
+        ),
+        _buildStatCard(
+          'Aktif Ders',
+          stats.totalActiveSessions.toString(),
+          Icons.school,
+          Colors.purple,
         ),
       ],
     );
@@ -220,26 +240,45 @@ class _ParentDashboardScreenState extends State<ParentDashboardScreen> {
 
   Widget _buildStatCard(String title, String value, IconData icon, Color color) {
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Icon(icon, size: 32, color: color),
-            const SizedBox(height: 12),
-            Text(
-              value,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              title,
-              style: Theme.of(context).textTheme.bodySmall,
-              textAlign: TextAlign.center,
-            ),
-          ],
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [color, color.withOpacity(0.7)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 36, color: Colors.white),
+              const SizedBox(height: 8),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.white70,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -324,23 +363,10 @@ class _ParentDashboardScreenState extends State<ParentDashboardScreen> {
       children: children.map((child) {
         return Card(
           margin: const EdgeInsets.only(bottom: 12),
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: child.gender == 1 ? Colors.blue : Colors.pink,
-              child: Text(
-                child.initials,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-            ),
-            title: Text(child.fullName),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (child.school != null) Text(child.school!),
-                if (child.age != null) Text('${child.age} yaş'),
-              ],
-            ),
-            trailing: const Icon(Icons.chevron_right),
+          elevation: 2,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
             onTap: () {
               Navigator.pushNamed(
                 context,
@@ -348,9 +374,126 @@ class _ParentDashboardScreenState extends State<ParentDashboardScreen> {
                 arguments: child.id,
               );
             },
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Hero(
+                        tag: 'child-avatar-${child.id}',
+                        child: CircleAvatar(
+                          radius: 30,
+                          backgroundImage: child.profilePicUrl != null
+                              ? NetworkImage(child.profilePicUrl!)
+                              : null,
+                          backgroundColor: child.gender == 1
+                              ? Colors.blue[100]
+                              : Colors.pink[100],
+                          child: child.profilePicUrl == null
+                              ? Text(
+                                  child.initials,
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: child.gender == 1
+                                        ? Colors.blue[700]
+                                        : Colors.pink[700],
+                                  ),
+                                )
+                              : null,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              child.fullName,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            if (child.school != null)
+                              Row(
+                                children: [
+                                  Icon(Icons.school, size: 14, color: Colors.grey[600]),
+                                  const SizedBox(width: 4),
+                                  Expanded(
+                                    child: Text(
+                                      child.school!,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.grey[600],
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            if (child.age != null)
+                              Row(
+                                children: [
+                                  Icon(Icons.cake, size: 14, color: Colors.grey[600]),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '${child.age} yaş',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                          ],
+                        ),
+                      ),
+                      Icon(Icons.chevron_right, color: Colors.grey[400]),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  const Divider(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildQuickStat(Icons.assignment, '0', 'Ödev'),
+                      _buildQuickStat(Icons.event, '95%', 'Devam'),
+                      _buildQuickStat(Icons.folder, '0', 'Proje'),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ),
         );
       }).toList(),
+    );
+  }
+
+  Widget _buildQuickStat(IconData icon, String value, String label) {
+    return Column(
+      children: [
+        Icon(icon, size: 20, color: Colors.grey[700]),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: Colors.grey[600],
+          ),
+        ),
+      ],
     );
   }
 
@@ -415,41 +558,149 @@ class _ParentDashboardScreenState extends State<ParentDashboardScreen> {
     );
   }
 
-  Widget _buildRecentRollcallsSection(List rollcalls) {
-    return Column(
-      children: rollcalls.take(5).map((rollcall) {
-        return Card(
-          margin: const EdgeInsets.only(bottom: 8),
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: rollcall.rollcall ? Colors.green : Colors.red,
-              child: Icon(
-                rollcall.rollcall ? Icons.check : Icons.close,
-                color: Colors.white,
-              ),
-            ),
-            title: Text(rollcall.studentName),
-            subtitle: Text(rollcall.lessonSubject),
-            trailing: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  rollcall.rollcallDisplay,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: rollcall.rollcall ? Colors.green : Colors.red,
-                  ),
-                ),
-                Text(
-                  DateFormat('dd.MM').format(DateTime.parse(rollcall.date)),
-                  style: const TextStyle(fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-        );
-      }).toList(),
+  Widget _buildRecentActivityTimeline(List rollcalls, List comments) {
+    final activities = <_ActivityItem>[];
+
+    for (var rollcall in rollcalls) {
+      activities.add(_ActivityItem(
+        type: 'rollcall',
+        date: DateTime.parse(rollcall.date),
+        title: rollcall.lessonSubject,
+        subtitle: '${rollcall.studentName} - ${rollcall.rollcallDisplay}',
+        icon: rollcall.rollcall ? Icons.check_circle : Icons.cancel,
+        color: rollcall.rollcall ? Colors.green : Colors.red,
+      ));
+    }
+
+    for (var comment in comments) {
+      if (comment.hasComment && comment.descToStudent != null) {
+        activities.add(_ActivityItem(
+          type: 'comment',
+          date: DateTime.parse(comment.date),
+          title: 'Öğretmen Yorumu',
+          subtitle: comment.descToStudent!,
+          icon: Icons.comment,
+          color: Colors.purple,
+        ));
+      }
+    }
+
+    activities.sort((a, b) => b.date.compareTo(a.date));
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: activities.take(5).length,
+      itemBuilder: (context, index) {
+        final activity = activities[index];
+        final isLast = index == activities.length - 1 || index == 4;
+        return _buildTimelineItem(activity, isLast);
+      },
     );
   }
+
+  Widget _buildTimelineItem(_ActivityItem activity, bool isLast) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: activity.color.withOpacity(0.2),
+                border: Border.all(color: activity.color, width: 2),
+              ),
+              child: Icon(activity.icon, size: 20, color: activity.color),
+            ),
+            if (!isLast)
+              Container(
+                width: 2,
+                height: 60,
+                color: Colors.grey[300],
+              ),
+          ],
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Card(
+            margin: const EdgeInsets.only(bottom: 16),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          activity.title,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        _formatTimeAgo(activity.date),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    activity.subtitle,
+                    style: TextStyle(fontSize: 13, color: Colors.grey[700]),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _formatTimeAgo(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inDays > 7) {
+      return DateFormat('dd.MM.yyyy').format(date);
+    } else if (difference.inDays > 0) {
+      return '${difference.inDays} gün önce';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours} saat önce';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} dakika önce';
+    } else {
+      return 'Az önce';
+    }
+  }
+}
+
+class _ActivityItem {
+  final String type;
+  final DateTime date;
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final Color color;
+
+  _ActivityItem({
+    required this.type,
+    required this.date,
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.color,
+  });
 }

@@ -406,4 +406,25 @@ class ApiService {
       return false;
     }
   }
+
+  // Fetch student scores
+  Future<Map<String, dynamic>> fetchStudentScores() async {
+    try {
+      final headers = await _getHeaders();
+      final response = await http.get(
+        Uri.parse('$baseUrl/student/scores/'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else if (response.statusCode == 401) {
+        throw Exception('Unauthorized - Please login again');
+      } else {
+        throw Exception('Failed to load scores');
+      }
+    } catch (e) {
+      throw Exception('Error fetching scores: ${e.toString()}');
+    }
+  }
 }

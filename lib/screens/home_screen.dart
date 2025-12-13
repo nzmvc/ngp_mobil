@@ -32,16 +32,12 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('NGP Mobil'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              Navigator.pushNamed(context, '/student-profile');
-            },
-          ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.account_circle),
             onSelected: (value) async {
-              if (value == 'logout') {
+              if (value == 'profile') {
+                Navigator.pushNamed(context, '/student-profile');
+              } else if (value == 'logout') {
                 final navigator = Navigator.of(context);
                 await context.read<StudentProvider>().logout();
                 if (mounted) {
@@ -50,6 +46,16 @@ class _HomeScreenState extends State<HomeScreen> {
               }
             },
             itemBuilder: (BuildContext context) => [
+              const PopupMenuItem<String>(
+                value: 'profile',
+                child: Row(
+                  children: [
+                    Icon(Icons.person, size: 20),
+                    SizedBox(width: 8),
+                    Text('Profilim'),
+                  ],
+                ),
+              ),
               const PopupMenuItem<String>(
                 value: 'logout',
                 child: Row(
@@ -188,6 +194,41 @@ class _HomeScreenState extends State<HomeScreen> {
                           value: dashboard.stats.totalAssignments.toString(),
                           icon: Icons.assignment_turned_in,
                           color: Colors.teal,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Quick Actions
+                  Text(
+                    'Hızlı Erişim',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _QuickActionCard(
+                          title: 'Puanlarım',
+                          icon: Icons.stars,
+                          color: Colors.amber,
+                          onTap: () {
+                            Navigator.pushNamed(context, '/student-scores');
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _QuickActionCard(
+                          title: 'Profilim',
+                          icon: Icons.person,
+                          color: Colors.blue,
+                          onTap: () {
+                            Navigator.pushNamed(context, '/student-profile');
+                          },
                         ),
                       ),
                     ],
@@ -380,6 +421,56 @@ class _RecentCourseCard extends StatelessWidget {
         subtitle: Text('$lessonCount ders'),
         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
         onTap: onTap,
+      ),
+    );
+  }
+}
+
+class _QuickActionCard extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _QuickActionCard({
+    required this.title,
+    required this.icon,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 2,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            gradient: LinearGradient(
+              colors: [color, color.withOpacity(0.7)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: Column(
+            children: [
+              Icon(icon, color: Colors.white, size: 32),
+              const SizedBox(height: 8),
+              Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

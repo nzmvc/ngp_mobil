@@ -3,6 +3,7 @@ import '../models/user.dart';
 import '../models/course.dart';
 import '../models/assignment.dart';
 import '../models/dashboard.dart';
+import '../models/score.dart';
 import '../services/api_service.dart';
 
 class StudentProvider with ChangeNotifier {
@@ -12,6 +13,7 @@ class StudentProvider with ChangeNotifier {
   Dashboard? _dashboard;
   List<Course> _courses = [];
   List<Assignment> _assignments = [];
+  StudentScoreStats? _scoreStats;
   bool _isLoading = false;
   String? _error;
 
@@ -20,6 +22,7 @@ class StudentProvider with ChangeNotifier {
   Dashboard? get dashboard => _dashboard;
   List<Course> get courses => _courses;
   List<Assignment> get assignments => _assignments;
+  StudentScoreStats? get scoreStats => _scoreStats;
   bool get isLoading => _isLoading;
   String? get error => _error;
 
@@ -164,5 +167,26 @@ class StudentProvider with ChangeNotifier {
       }
     }
     return false;
+  }
+
+  // Fetch student scores
+  Future<void> fetchScores() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final data = await _apiService.fetchStudentScores();
+      _scoreStats = StudentScoreStats.fromJson(data);
+      _error = null;
+    } catch (e) {
+      _error = e.toString();
+      if (_error!.contains('Unauthorized')) {
+        await logout();
+      }
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }

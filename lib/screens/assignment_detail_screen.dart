@@ -239,7 +239,7 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
               child: ListTile(
                 leading: Icon(Icons.event, color: Theme.of(context).primaryColor),
                 title: const Text('Son Teslim Tarihi'),
-                subtitle: Text(_formatDateTime(assignment['due_date'])),
+                subtitle: Text(_formatDateTime(assignment['due_date'] as String?)),
                 trailing: assignment['is_overdue'] == true
                     ? const Chip(
                         label: Text('Süre Doldu', style: TextStyle(fontSize: 11)),
@@ -322,7 +322,7 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    Text(assignment['teacher_notes']),
+                    Text((assignment['teacher_notes'] ?? '') as String),
                   ],
                 ),
               ),
@@ -360,7 +360,7 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    Text('Tarih: ${_formatDateTime(submission['submitted_at'])}'),
+                    Text('Tarih: ${_formatDateTime(submission['submitted_at'] as String?)}'),
                     if (submission['is_late'] == true)
                       const Text(
                         'Geç teslim edildi',
@@ -418,7 +418,7 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
                     if (grade['graded_date'] != null) ...[
                       const SizedBox(height: 8),
                       Text(
-                        'Değerlendirme Tarihi: ${_formatDateTime(grade['graded_date'])}',
+                        'Değerlendirme Tarihi: ${_formatDateTime(grade['graded_date'] as String?)}',
                         style: TextStyle(color: Colors.grey[700]),
                       ),
                     ],
@@ -460,7 +460,7 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      assignment['feedback'],
+                      (assignment['feedback'] ?? '') as String,
                       style: const TextStyle(fontSize: 14, height: 1.5),
                     ),
                   ],
@@ -522,7 +522,8 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
     }
   }
 
-  String _formatDateTime(String dateTimeStr) {
+  String _formatDateTime(String? dateTimeStr) {
+    if (dateTimeStr == null) return 'Bilinmiyor';
     try {
       final dateTime = DateTime.parse(dateTimeStr);
       return '${dateTime.day.toString().padLeft(2, '0')}.${dateTime.month.toString().padLeft(2, '0')}.${dateTime.year} ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';

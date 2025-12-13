@@ -15,8 +15,10 @@ import 'screens/lesson_detail_screen.dart';
 import 'screens/assignment_detail_screen.dart';
 import 'screens/assignment_submit_screen.dart';
 import 'screens/student_profile_screen.dart';
+import 'screens/student_scores_screen.dart';
 import 'screens/parent/parent_dashboard_screen.dart';
 import 'screens/parent/child_detail_screen.dart';
+import 'screens/parent/children_list_screen.dart';
 import 'screens/parent/payment_list_screen.dart';
 import 'screens/parent/teacher_comments_screen.dart';
 import 'screens/teacher/teacher_dashboard_screen.dart';
@@ -100,6 +102,10 @@ class MyApp extends StatelessWidget {
               return MaterialPageRoute(
                 builder: (_) => ChildDetailScreen(childId: childId),
               );
+            case '/parent/children':
+              return MaterialPageRoute(
+                builder: (_) => const ChildrenListScreen(),
+              );
             case '/parent/payments':
               return MaterialPageRoute(
                 builder: (_) => const PaymentListScreen(),
@@ -151,6 +157,10 @@ class MyApp extends StatelessWidget {
             case '/student-profile':
               return MaterialPageRoute(
                 builder: (_) => const StudentProfileScreen(),
+              );
+            case '/student-scores':
+              return MaterialPageRoute(
+                builder: (_) => const StudentScoresScreen(),
               );
             default:
               return MaterialPageRoute(

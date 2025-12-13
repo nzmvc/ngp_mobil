@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 import '../models/student_profile.dart';
+import '../providers/student_provider.dart';
 
 class StudentProfileScreen extends StatefulWidget {
   const StudentProfileScreen({Key? key}) : super(key: key);
@@ -363,6 +365,54 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
               ],
             ),
           ),
+
+          // Logout button
+          const SizedBox(height: 24),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () async {
+                  final shouldLogout = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Çıkış Yap'),
+                      content: const Text('Çıkış yapmak istediğinizden emin misiniz?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text('İptal'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text('Çıkış Yap'),
+                        ),
+                      ],
+                    ),
+                  );
+
+                  if (shouldLogout == true && mounted) {
+                    final navigator = Navigator.of(context);
+                    await context.read<StudentProvider>().logout();
+                    if (mounted) {
+                      navigator.pushNamedAndRemoveUntil('/login', (route) => false);
+                    }
+                  }
+                },
+                icon: const Icon(Icons.logout, color: Colors.red),
+                label: const Text(
+                  'Çıkış Yap',
+                  style: TextStyle(color: Colors.red),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: Colors.red),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
         ],
       ),
     );

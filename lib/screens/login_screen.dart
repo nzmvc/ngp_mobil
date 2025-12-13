@@ -126,12 +126,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Logo/Title
-                  Icon(
-                    Icons.school,
-                    size: 80,
-                    color: Theme.of(context).primaryColor,
+                  Image.asset(
+                    'images/ngp_logo.png',
+                    height: 120,
+                    fit: BoxFit.contain,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 24),
                   Text(
                     'NGP Mobil',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
